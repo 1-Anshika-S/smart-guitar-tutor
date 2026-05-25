@@ -31,8 +31,13 @@ The goal of Version 1 is to let a user open their webcam, manually align a virtu
 - HTML Canvas
 - Browser Webcam API
 
+
 ## Run Locally
 
+Make sure you have [Node.js](https://nodejs.org/) installed (Version 18 or higher recommended). You can check your version by running:
+node -v
+After this clone the repo and run the following:
 ```bash
 npm install
 npm run dev
+
