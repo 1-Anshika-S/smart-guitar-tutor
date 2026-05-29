@@ -1,28 +1,14 @@
-import type { Chord } from "../types/chord";
-
-type InstructionsPanelProps = {
-    selectedChord: Chord;
-};
-
-function InstructionsPanel({ selectedChord }: InstructionsPanelProps) {
+function InstructionsPanel() {
   return (
     <section className="panel">
-      <h2>Day 1 Build Status</h2>
-
-      <p>
-        Selected chord: <strong>{selectedChord.name}</strong>
-      </p>
-
-      <p>
-        Finger positions loaded:{" "}
-        <strong>{selectedChord.positions.length}</strong>
-      </p>
+      <p className="section-kicker">Build Plan</p>
+      <h2>Version 1 Workflow</h2>
 
       <ol className="instruction-list">
-        <li>Set up React, TypeScript, and Vite.</li>
-        <li>Create a typed chord database.</li>
-        <li>Build a clean chord selector.</li>
-        <li>Prepare the camera and overlay area.</li>
+        <li>Select a chord from the dropdown.</li>
+        <li>Start the webcam preview.</li>
+        <li>Align the virtual fretboard over the real guitar.</li>
+        <li>Follow the finger placement dots.</li>
       </ol>
     </section>
   );
