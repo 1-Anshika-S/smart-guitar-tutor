@@ -187,3 +187,87 @@
 .finger-row:last-child {
   border-bottom: none;
 }
+
+.fretboard-panel {
+  overflow-x: auto;
+}
+
+.fretboard-preview {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.85);
+}
+
+.string-row {
+  display: grid;
+  grid-template-columns: 2rem 5rem repeat(5, minmax(3.5rem, 1fr));
+  min-height: 3.25rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.string-row:last-child {
+  border-bottom: none;
+}
+
+.string-status {
+  display: grid;
+  place-items: center;
+  color: #bfdbfe;
+  background: rgba(15, 23, 42, 0.95);
+  font-size: 0.95rem;
+  font-weight: 900;
+}
+
+.string-label {
+  display: grid;
+  place-items: center;
+  color: #94a3b8;
+  background: rgba(15, 23, 42, 0.85);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.fret-cell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  border-left: 2px solid rgba(148, 163, 184, 0.35);
+}
+
+.fret-cell::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  background: rgba(226, 232, 240, 0.25);
+  transform: translateY(-50%);
+}
+
+.finger-dot {
+  position: relative;
+  z-index: 1;
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: #0f172a;
+  background: #bfdbfe;
+  font-weight: 900;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+.fret-label-row {
+  display: grid;
+  grid-template-columns: 2rem 5rem repeat(5, minmax(3.5rem, 1fr));
+  margin-top: 0.5rem;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+}

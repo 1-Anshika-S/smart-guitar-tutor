@@ -4,6 +4,7 @@ import "./App.css";
 import CameraPlaceholder from "./components/CameraPlaceholder";
 import ChordDetails from "./components/ChordDetails";
 import ChordSelector from "./components/ChordSelector";
+import FretboardPreview from "./components/FretboardPreview";
 import InstructionsPanel from "./components/InstructionsPanel";
 import { chords } from "./data/chords";
 
@@ -39,6 +40,7 @@ function App() {
 
         <div className="right-column">
           <CameraPlaceholder />
+          <FretboardPreview chord={selectedChord} />
         </div>
       </section>
     </main>
