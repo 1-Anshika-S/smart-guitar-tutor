@@ -6,13 +6,31 @@ import ChordDetails from "./components/ChordDetails";
 import ChordSelector from "./components/ChordSelector";
 import FretboardPreview from "./components/FretboardPreview";
 import InstructionsPanel from "./components/InstructionsPanel";
+import PracticeControls from "./components/PracticeControls";
 import { chords } from "./data/chords";
+import {
+  getChordById,
+  getNextChordId,
+  getPreviousChordId,
+  getRandomChordId,
+} from "./utils/chordUtils";
 
 function App() {
   const [selectedChordId, setSelectedChordId] = useState(chords[0].id);
 
-  const selectedChord =
-    chords.find((chord) => chord.id === selectedChordId) ?? chords[0];
+  const selectedChord = getChordById(chords, selectedChordId);
+
+  function handlePreviousChord() {
+    setSelectedChordId(getPreviousChordId(chords, selectedChordId));
+  }
+
+  function handleNextChord() {
+    setSelectedChordId(getNextChordId(chords, selectedChordId));
+  }
+
+  function handleRandomChord() {
+    setSelectedChordId(getRandomChordId(chords, selectedChordId));
+  }
 
   return (
     <main className="app">
@@ -31,6 +49,12 @@ function App() {
             chords={chords}
             selectedChordId={selectedChordId}
             onChordChange={setSelectedChordId}
+          />
+
+          <PracticeControls
+            onPreviousChord={handlePreviousChord}
+            onNextChord={handleNextChord}
+            onRandomChord={handleRandomChord}
           />
 
           <ChordDetails chord={selectedChord} />

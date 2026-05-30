@@ -271,3 +271,33 @@
   font-weight: 700;
   text-align: center;
 }
+
+.practice-controls {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.practice-controls button {
+  cursor: pointer;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid rgba(147, 197, 253, 0.35);
+  border-radius: 0.75rem;
+  color: #f8fafc;
+  background: rgba(30, 64, 175, 0.35);
+  font-weight: 800;
+}
+
+.practice-controls button:hover {
+  background: rgba(37, 99, 235, 0.55);
+}
+
+.practice-controls button:active {
+  transform: translateY(1px);
+}
+
+@media (max-width: 500px) {
+  .practice-controls {
+    grid-template-columns: 1fr;
+  }
+}
