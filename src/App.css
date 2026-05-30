@@ -301,3 +301,110 @@
     grid-template-columns: 1fr;
   }
 }
+
+.camera-stage-panel {
+  padding: 1.25rem;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 1rem;
+  background: rgba(15, 23, 42, 0.75);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.camera-stage-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.camera-stage-header h2 {
+  margin: 0;
+}
+
+.camera-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid rgba(147, 197, 253, 0.4);
+  border-radius: 999px;
+  color: #bfdbfe;
+  background: rgba(30, 64, 175, 0.25);
+  font-size: 0.8rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.camera-stage {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  overflow: hidden;
+  border: 2px solid rgba(147, 197, 253, 0.35);
+  border-radius: 1rem;
+  background: #020617;
+}
+
+.camera-video-placeholder,
+.camera-overlay-placeholder {
+  position: absolute;
+  inset: 0;
+}
+
+.camera-video-placeholder {
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background:
+    linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));
+  text-align: center;
+}
+
+.camera-overlay-placeholder {
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+}
+
+.overlay-frame {
+  position: relative;
+  width: 72%;
+  height: 55%;
+  border: 1px dashed rgba(191, 219, 254, 0.7);
+  border-radius: 0.75rem;
+}
+
+.overlay-corner {
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  border-color: #bfdbfe;
+}
+
+.overlay-corner.top-left {
+  top: -2px;
+  left: -2px;
+  border-top: 3px solid;
+  border-left: 3px solid;
+}
+
+.overlay-corner.top-right {
+  top: -2px;
+  right: -2px;
+  border-top: 3px solid;
+  border-right: 3px solid;
+}
+
+.overlay-corner.bottom-left {
+  bottom: -2px;
+  left: -2px;
+  border-bottom: 3px solid;
+  border-left: 3px solid;
+}
+
+.overlay-corner.bottom-right {
+  right: -2px;
+  bottom: -2px;
+  border-right: 3px solid;
+  border-bottom: 3px solid;
+}
