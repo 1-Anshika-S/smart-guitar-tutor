@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import CanvasOverlay from "./CanvasOverlay";
 
 type CameraStatus = "idle" | "starting" | "active" | "error";
 
@@ -82,40 +83,32 @@ function CameraStage() {
       </div>
 
       <div className="camera-stage">
-        <video
-          ref={videoRef}
-          className="webcam-video"
-          autoPlay
-          playsInline
-          muted
-        />
+  <video
+    ref={videoRef}
+    className="webcam-video"
+    autoPlay
+    playsInline
+    muted
+  />
 
-        {!isCameraActive && (
-          <div className="camera-video-placeholder">
-            <div>
-              <p className="camera-title">Webcam feed will appear here</p>
-              <p className="camera-subtitle">
-                Start the camera, then place your guitar in view. The canvas
-                overlay will be added in the next phase.
-              </p>
+  {!isCameraActive && (
+    <div className="camera-video-placeholder">
+      <div>
+        <p className="camera-title">Webcam feed will appear here</p>
+        <p className="camera-subtitle">
+          Start the camera, then place your guitar in view. The canvas
+          overlay will be added in the next phase.
+        </p>
 
-              {errorMessage ? (
-                <p className="camera-error">{errorMessage}</p>
-              ) : null}
-            </div>
-          </div>
-        )}
-
-        <div className="camera-overlay-placeholder">
-          <div className="overlay-frame">
-            <span className="overlay-corner top-left" />
-            <span className="overlay-corner top-right" />
-            <span className="overlay-corner bottom-left" />
-            <span className="overlay-corner bottom-right" />
-          </div>
-        </div>
+        {errorMessage ? (
+          <p className="camera-error">{errorMessage}</p>
+        ) : null}
       </div>
+    </div>
+  )}
 
+  <CanvasOverlay />
+</div>
       <div className="camera-actions">
         <button
           type="button"
