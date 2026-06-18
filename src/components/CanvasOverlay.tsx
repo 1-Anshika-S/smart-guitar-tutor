@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import {
   clearCanvas,
+  drawCoordinateGuide,
   drawFretboardGrid,
   getCanvasDisplaySize,
   getDefaultFretboardBounds,
@@ -29,6 +30,7 @@ function CanvasOverlay() {
 
       clearCanvas(ctx, size);
       drawFretboardGrid(ctx, fretboardBounds);
+      drawCoordinateGuide(ctx, fretboardBounds);
     }
 
     draw();

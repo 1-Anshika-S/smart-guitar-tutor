@@ -1,3 +1,5 @@
+import type { StringNumber } from "../types/chord";
+
 export type CanvasSize = {
   width: number;
   height: number;
@@ -9,6 +11,11 @@ export type FretboardBounds = {
   width: number;
   height: number;
   fretCount: number;
+};
+
+export type CanvasPoint = {
+  x: number;
+  y: number;
 };
 
 export function setupCanvasForDrawing(
@@ -47,13 +54,45 @@ export function clearCanvas(
   ctx.clearRect(0, 0, size.width, size.height);
 }
 
-export function getDefaultFretboardBounds(size: CanvasSize): FretboardBounds {
+export function getDefaultFretboardBounds(
+  size: CanvasSize
+): FretboardBounds {
   return {
     x: size.width * 0.16,
     y: size.height * 0.28,
     width: size.width * 0.68,
     height: size.height * 0.42,
     fretCount: 5,
+  };
+}
+
+export function getStringY(
+  stringNumber: StringNumber,
+  bounds: FretboardBounds
+): number {
+  const stringSpacing = bounds.height / 5;
+  const stringIndex = 6 - stringNumber;
+
+  return bounds.y + stringIndex * stringSpacing;
+}
+
+export function getFretCenterX(
+  fretNumber: number,
+  bounds: FretboardBounds
+): number {
+  const fretSpacing = bounds.width / bounds.fretCount;
+
+  return bounds.x + (fretNumber - 0.5) * fretSpacing;
+}
+
+export function getFingerPoint(
+  stringNumber: StringNumber,
+  fretNumber: number,
+  bounds: FretboardBounds
+): CanvasPoint {
+  return {
+    x: getFretCenterX(fretNumber, bounds),
+    y: getStringY(stringNumber, bounds),
   };
 }
 
@@ -104,7 +143,7 @@ export function drawFretboardGrid(
   ctx.textBaseline = "middle";
 
   for (let fretIndex = 1; fretIndex <= bounds.fretCount; fretIndex += 1) {
-    const x = bounds.x + (fretIndex - 0.5) * fretSpacing;
+    const x = getFretCenterX(fretIndex, bounds);
     const y = bounds.y + bounds.height + 22;
 
     ctx.fillText(`Fret ${fretIndex}`, x, y);
@@ -114,12 +153,48 @@ export function drawFretboardGrid(
   ctx.font = "800 14px system-ui";
   ctx.textAlign = "right";
 
-  for (let stringIndex = 0; stringIndex < stringCount; stringIndex += 1) {
-    const stringNumber = 6 - stringIndex;
+  for (
+    let stringNumber = 6 as StringNumber;
+    stringNumber >= 1;
+    stringNumber = (stringNumber - 1) as StringNumber
+  ) {
     const x = bounds.x - 12;
-    const y = bounds.y + stringIndex * stringSpacing;
+    const y = getStringY(stringNumber, bounds);
 
     ctx.fillText(String(stringNumber), x, y);
+  }
+
+  ctx.restore();
+}
+
+export function drawCoordinateGuide(
+  ctx: CanvasRenderingContext2D,
+  bounds: FretboardBounds
+) {
+  ctx.save();
+
+  ctx.fillStyle = "rgba(250, 204, 21, 0.75)";
+
+  for (
+    let stringNumber = 6 as StringNumber;
+    stringNumber >= 1;
+    stringNumber = (stringNumber - 1) as StringNumber
+  ) {
+    for (
+      let fretNumber = 1;
+      fretNumber <= bounds.fretCount;
+      fretNumber += 1
+    ) {
+      const point = getFingerPoint(
+        stringNumber,
+        fretNumber,
+        bounds
+      );
+
+      ctx.beginPath();
+      ctx.arc(point.x, point.y, 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 
   ctx.restore();
