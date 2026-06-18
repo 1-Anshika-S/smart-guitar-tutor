@@ -62,7 +62,7 @@ function App() {
         </div>
 
         <div className="right-column">
-          <CameraStage />
+          <CameraStage chord={selectedChord} />
           <FretboardPreview chord={selectedChord} />
         </div>
       </section>

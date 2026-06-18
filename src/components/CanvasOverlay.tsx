@@ -1,14 +1,19 @@
 import { useEffect, useRef } from "react";
+import type { Chord } from "../types/chord";
 import {
   clearCanvas,
-  drawCoordinateGuide,
+  drawChordDots,
   drawFretboardGrid,
   getCanvasDisplaySize,
   getDefaultFretboardBounds,
   setupCanvasForDrawing,
 } from "../utils/canvasUtils";
 
-function CanvasOverlay() {
+type CanvasOverlayProps = {
+  chord: Chord;
+};
+
+function CanvasOverlay({ chord }: CanvasOverlayProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -30,7 +35,7 @@ function CanvasOverlay() {
 
       clearCanvas(ctx, size);
       drawFretboardGrid(ctx, fretboardBounds);
-      drawCoordinateGuide(ctx, fretboardBounds);
+      drawChordDots(ctx, fretboardBounds, chord);
     }
 
     draw();
@@ -40,7 +45,7 @@ function CanvasOverlay() {
     return () => {
       window.removeEventListener("resize", draw);
     };
-  }, []);
+  }, [chord]);
 
   return <canvas ref={canvasRef} className="overlay-canvas" />;
 }

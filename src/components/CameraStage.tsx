@@ -1,9 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import CanvasOverlay from "./CanvasOverlay";
+import type { Chord } from "../types/chord";
+
+type CameraStageProps = {
+  chord: Chord;
+};
 
 type CameraStatus = "idle" | "starting" | "active" | "error";
 
-function CameraStage() {
+function CameraStage({ chord }: CameraStageProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
@@ -107,7 +112,7 @@ function CameraStage() {
     </div>
   )}
 
-  <CanvasOverlay />
+  <CanvasOverlay chord={chord} />
 </div>
       <div className="camera-actions">
         <button
