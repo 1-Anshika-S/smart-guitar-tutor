@@ -1,3 +1,4 @@
+import type { FretboardAlignment } from "../types/alignment";
 import type { Chord, StringNumber } from "../types/chord";
 
 export type CanvasSize = {
@@ -47,21 +48,19 @@ export function getCanvasDisplaySize(canvas: HTMLCanvasElement): CanvasSize {
   };
 }
 
-export function clearCanvas(
-  ctx: CanvasRenderingContext2D,
-  size: CanvasSize
-) {
+export function clearCanvas(ctx: CanvasRenderingContext2D, size: CanvasSize) {
   ctx.clearRect(0, 0, size.width, size.height);
 }
 
-export function getDefaultFretboardBounds(
-  size: CanvasSize
+export function getFretboardBounds(
+  size: CanvasSize,
+  alignment: FretboardAlignment
 ): FretboardBounds {
   return {
-    x: size.width * 0.16,
-    y: size.height * 0.28,
-    width: size.width * 0.68,
-    height: size.height * 0.42,
+    x: size.width * (alignment.xPercent / 100),
+    y: size.height * (alignment.yPercent / 100),
+    width: size.width * (alignment.widthPercent / 100),
+    height: size.height * (alignment.heightPercent / 100),
     fretCount: 5,
   };
 }
@@ -167,39 +166,6 @@ export function drawFretboardGrid(
   ctx.restore();
 }
 
-export function drawCoordinateGuide(
-  ctx: CanvasRenderingContext2D,
-  bounds: FretboardBounds
-) {
-  ctx.save();
-
-  ctx.fillStyle = "rgba(250, 204, 21, 0.75)";
-
-  for (
-    let stringNumber = 6 as StringNumber;
-    stringNumber >= 1;
-    stringNumber = (stringNumber - 1) as StringNumber
-  ) {
-    for (
-      let fretNumber = 1;
-      fretNumber <= bounds.fretCount;
-      fretNumber += 1
-    ) {
-      const point = getFingerPoint(
-        stringNumber,
-        fretNumber,
-        bounds
-      );
-
-      ctx.beginPath();
-      ctx.arc(point.x, point.y, 4, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-
-  ctx.restore();
-}
-
 export function drawChordDots(
   ctx: CanvasRenderingContext2D,
   bounds: FretboardBounds,
@@ -207,33 +173,17 @@ export function drawChordDots(
 ) {
   ctx.save();
 
-  const dotRadius = Math.max(
-    12,
-    Math.min(18, bounds.height / 10)
-  );
+  const dotRadius = Math.max(12, Math.min(18, bounds.height / 10));
 
   for (const position of chord.positions) {
-    if (
-      position.fret < 1 ||
-      position.fret > bounds.fretCount
-    ) {
+    if (position.fret < 1 || position.fret > bounds.fretCount) {
       continue;
     }
 
-    const point = getFingerPoint(
-      position.string,
-      position.fret,
-      bounds
-    );
+    const point = getFingerPoint(position.string, position.fret, bounds);
 
     ctx.beginPath();
-    ctx.arc(
-      point.x,
-      point.y,
-      dotRadius,
-      0,
-      Math.PI * 2
-    );
+    ctx.arc(point.x, point.y, dotRadius, 0, Math.PI * 2);
 
     ctx.fillStyle = "rgba(59, 130, 246, 0.95)";
     ctx.fill();
@@ -247,11 +197,7 @@ export function drawChordDots(
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
-    ctx.fillText(
-      String(position.finger),
-      point.x,
-      point.y + 1
-    );
+    ctx.fillText(String(position.finger), point.x, point.y + 1);
   }
 
   ctx.fillStyle = "rgba(248, 250, 252, 0.95)";
@@ -259,11 +205,7 @@ export function drawChordDots(
   ctx.textAlign = "left";
   ctx.textBaseline = "bottom";
 
-  ctx.fillText(
-    `${chord.name} (${chord.shortName})`,
-    bounds.x,
-    bounds.y - 14
-  );
+  ctx.fillText(`${chord.name} (${chord.shortName})`, bounds.x, bounds.y - 14);
 
   ctx.restore();
 }

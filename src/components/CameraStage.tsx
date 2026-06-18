@@ -1,12 +1,22 @@
 import { useEffect, useRef, useState } from "react";
+
+import AlignmentControls from "./AlignmentControls";
 import CanvasOverlay from "./CanvasOverlay";
+import type { FretboardAlignment } from "../types/alignment";
 import type { Chord } from "../types/chord";
+
+type CameraStatus = "idle" | "starting" | "active" | "error";
 
 type CameraStageProps = {
   chord: Chord;
 };
 
-type CameraStatus = "idle" | "starting" | "active" | "error";
+const DEFAULT_ALIGNMENT: FretboardAlignment = {
+  xPercent: 16,
+  yPercent: 28,
+  widthPercent: 68,
+  heightPercent: 42,
+};
 
 function CameraStage({ chord }: CameraStageProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -14,6 +24,12 @@ function CameraStage({ chord }: CameraStageProps) {
 
   const [cameraStatus, setCameraStatus] = useState<CameraStatus>("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [alignment, setAlignment] =
+    useState<FretboardAlignment>(DEFAULT_ALIGNMENT);
+
+  // This mirrors ONLY the webcam video.
+  // It does NOT change the canvas overlay or fretboard coordinate math.
+  const [isMirrored, setIsMirrored] = useState(true);
 
   async function startCamera() {
     setCameraStatus("starting");
@@ -40,9 +56,7 @@ function CameraStage({ chord }: CameraStageProps) {
       setCameraStatus("active");
     } catch (error) {
       const message =
-        error instanceof Error
-          ? error.message
-          : "Unable to start the camera.";
+        error instanceof Error ? error.message : "Unable to start the camera.";
 
       setErrorMessage(message);
       setCameraStatus("error");
@@ -88,32 +102,33 @@ function CameraStage({ chord }: CameraStageProps) {
       </div>
 
       <div className="camera-stage">
-  <video
-    ref={videoRef}
-    className="webcam-video"
-    autoPlay
-    playsInline
-    muted
-  />
+        <video
+          ref={videoRef}
+          className={`webcam-video ${isMirrored ? "mirrored" : ""}`}
+          autoPlay
+          playsInline
+          muted
+        />
 
-  {!isCameraActive && (
-    <div className="camera-video-placeholder">
-      <div>
-        <p className="camera-title">Webcam feed will appear here</p>
-        <p className="camera-subtitle">
-          Start the camera, then place your guitar in view. The canvas
-          overlay will be added in the next phase.
-        </p>
+        {!isCameraActive && (
+          <div className="camera-video-placeholder">
+            <div>
+              <p className="camera-title">Webcam feed will appear here</p>
+              <p className="camera-subtitle">
+                Start the camera, then place your guitar in view. The fretboard
+                guide is drawn on a canvas layer above the video.
+              </p>
 
-        {errorMessage ? (
-          <p className="camera-error">{errorMessage}</p>
-        ) : null}
+              {errorMessage ? (
+                <p className="camera-error">{errorMessage}</p>
+              ) : null}
+            </div>
+          </div>
+        )}
+
+        <CanvasOverlay chord={chord} alignment={alignment} />
       </div>
-    </div>
-  )}
 
-  <CanvasOverlay chord={chord} />
-</div>
       <div className="camera-actions">
         <button
           type="button"
@@ -128,9 +143,24 @@ function CameraStage({ chord }: CameraStageProps) {
         </button>
       </div>
 
+      <label className="mirror-toggle">
+        <input
+          type="checkbox"
+          checked={isMirrored}
+          onChange={(event) => setIsMirrored(event.target.checked)}
+        />
+        Mirror webcam view
+      </label>
+
+      <AlignmentControls
+        alignment={alignment}
+        onAlignmentChange={setAlignment}
+        onReset={() => setAlignment(DEFAULT_ALIGNMENT)}
+      />
+
       <p className="camera-note">
-        Camera access works on localhost during development. When deployed, the
-        app must be served over HTTPS.
+        Use the controls to match the virtual fretboard to the visible guitar
+        neck.
       </p>
     </section>
   );
