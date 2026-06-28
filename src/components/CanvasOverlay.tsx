@@ -6,6 +6,7 @@ import {
   clearCanvas,
   drawChordDots,
   drawFretboardGrid,
+  drawStringIndicators,
   getCanvasDisplaySize,
   getFretboardBounds,
   setupCanvasForDrawing,
@@ -36,9 +37,10 @@ function CanvasOverlay({ chord, alignment }: CanvasOverlayProps) {
       const size = getCanvasDisplaySize(canvas);
       const fretboardBounds = getFretboardBounds(size, alignment);
 
-      clearCanvas(ctx, size);
-      drawFretboardGrid(ctx, fretboardBounds);
-      drawChordDots(ctx, fretboardBounds, chord);
+    clearCanvas(ctx, size);
+    drawFretboardGrid(ctx, fretboardBounds);
+    drawStringIndicators(ctx, fretboardBounds, chord);
+    drawChordDots(ctx, fretboardBounds, chord);
     }
 
     draw();

@@ -24,8 +24,8 @@ function CameraStage({ chord }: CameraStageProps) {
 
   const [cameraStatus, setCameraStatus] = useState<CameraStatus>("idle");
   const [errorMessage, setErrorMessage] = useState("");
-  const [alignment, setAlignment] =
-    useState<FretboardAlignment>(DEFAULT_ALIGNMENT);
+  const [alignment, setAlignment] = useState<FretboardAlignment>(DEFAULT_ALIGNMENT);
+  const [cameraZoom, setCameraZoom] = useState(1);
 
   // This mirrors ONLY the webcam video.
   // It does NOT change the canvas overlay or fretboard coordinate math.
@@ -105,9 +105,14 @@ function CameraStage({ chord }: CameraStageProps) {
         <video
           ref={videoRef}
           className={`webcam-video ${isMirrored ? "mirrored" : ""}`}
-          autoPlay
-          playsInline
-          muted
+          style={
+            {
+              "--camera-zoom": String(cameraZoom),
+            } as React.CSSProperties
+        }
+        autoPlay
+        playsInline
+         muted
         />
 
         {!isCameraActive && (
@@ -149,14 +154,27 @@ function CameraStage({ chord }: CameraStageProps) {
           checked={isMirrored}
           onChange={(event) => setIsMirrored(event.target.checked)}
         />
-        Mirror webcam view
+      Mirror webcam view
       </label>
 
-      <AlignmentControls
-        alignment={alignment}
-        onAlignmentChange={setAlignment}
-        onReset={() => setAlignment(DEFAULT_ALIGNMENT)}
+      <label className="camera-zoom-control">
+        <span>Camera zoom: {cameraZoom.toFixed(1)}x</span>
+
+        <input
+        type="range"
+        min="1"
+        max="5"
+        step="0.1"
+        value={cameraZoom}
+        onChange={(event) => setCameraZoom(Number(event.target.value))}
       />
+  </label>
+
+<AlignmentControls
+  alignment={alignment}
+  onAlignmentChange={setAlignment}
+  onReset={() => setAlignment(DEFAULT_ALIGNMENT)}
+/>
 
       <p className="camera-note">
         Use the controls to match the virtual fretboard to the visible guitar

@@ -166,6 +166,40 @@ export function drawFretboardGrid(
   ctx.restore();
 }
 
+export function drawStringIndicators(
+  ctx: CanvasRenderingContext2D,
+  bounds: FretboardBounds,
+  chord: Chord
+) {
+  ctx.save();
+
+  ctx.fillStyle = "rgba(191, 219, 254, 0.98)";
+  ctx.font = "900 16px system-ui";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  for (
+    let stringNumber = 6 as StringNumber;
+    stringNumber >= 1;
+    stringNumber = (stringNumber - 1) as StringNumber
+  ) {
+    const isMuted = chord.mutedStrings.includes(stringNumber);
+    const isOpen = chord.openStrings.includes(stringNumber);
+
+    if (!isMuted && !isOpen) {
+      continue;
+    }
+
+    const marker = isMuted ? "X" : "O";
+    const x = bounds.x - 38;
+    const y = getStringY(stringNumber, bounds);
+
+    ctx.fillText(marker, x, y);
+  }
+
+  ctx.restore();
+}
+
 export function drawChordDots(
   ctx: CanvasRenderingContext2D,
   bounds: FretboardBounds,
