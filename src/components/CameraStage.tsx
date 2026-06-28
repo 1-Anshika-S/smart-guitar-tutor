@@ -1,9 +1,20 @@
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 
 import AlignmentControls from "./AlignmentControls";
 import CanvasOverlay from "./CanvasOverlay";
 import type { FretboardAlignment } from "../types/alignment";
 import type { Chord } from "../types/chord";
+import {
+  DEFAULT_CAMERA_SETTINGS,
+  loadCameraSettings,
+  saveCameraSettings,
+  type CameraSettings,
+} from "../utils/cameraSettings";
 
 type CameraStatus = "idle" | "starting" | "active" | "error";
 
@@ -11,25 +22,62 @@ type CameraStageProps = {
   chord: Chord;
 };
 
-const DEFAULT_ALIGNMENT: FretboardAlignment = {
-  xPercent: 16,
-  yPercent: 28,
-  widthPercent: 68,
-  heightPercent: 42,
-};
+function getCameraErrorMessage(error: unknown): string {
+  if (error instanceof DOMException) {
+    if (error.name === "NotAllowedError") {
+      return "Camera permission was blocked. Enable camera access in your browser settings, then reload the page.";
+    }
+
+    if (error.name === "NotFoundError") {
+      return "No camera was found. Connect a camera and try again.";
+    }
+
+    if (error.name === "NotReadableError") {
+      return "The camera is already being used by another application or browser tab.";
+    }
+
+    if (error.name === "OverconstrainedError") {
+      return "The available camera cannot meet the requested settings.";
+    }
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return "Unable to start the camera.";
+}
 
 function CameraStage({ chord }: CameraStageProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
+  const [initialCameraSettings] = useState<CameraSettings>(
+    () => loadCameraSettings() ?? DEFAULT_CAMERA_SETTINGS
+  );
+
   const [cameraStatus, setCameraStatus] = useState<CameraStatus>("idle");
   const [errorMessage, setErrorMessage] = useState("");
-  const [alignment, setAlignment] = useState<FretboardAlignment>(DEFAULT_ALIGNMENT);
-  const [cameraZoom, setCameraZoom] = useState(1);
 
-  // This mirrors ONLY the webcam video.
-  // It does NOT change the canvas overlay or fretboard coordinate math.
-  const [isMirrored, setIsMirrored] = useState(true);
+  const [alignment, setAlignment] = useState<FretboardAlignment>(
+    initialCameraSettings.alignment
+  );
+
+  const [isMirrored, setIsMirrored] = useState(
+    initialCameraSettings.isMirrored
+  );
+
+  const [cameraZoom, setCameraZoom] = useState(
+    initialCameraSettings.cameraZoom
+  );
+
+  useEffect(() => {
+    saveCameraSettings({
+      alignment,
+      isMirrored,
+      cameraZoom,
+    });
+  }, [alignment, isMirrored, cameraZoom]);
 
   async function startCamera() {
     setCameraStatus("starting");
@@ -55,10 +103,7 @@ function CameraStage({ chord }: CameraStageProps) {
 
       setCameraStatus("active");
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Unable to start the camera.";
-
-      setErrorMessage(message);
+      setErrorMessage(getCameraErrorMessage(error));
       setCameraStatus("error");
     }
   }
@@ -74,6 +119,12 @@ function CameraStage({ chord }: CameraStageProps) {
     }
 
     setCameraStatus("idle");
+  }
+
+  function resetCameraSetup() {
+    setAlignment(DEFAULT_CAMERA_SETTINGS.alignment);
+    setIsMirrored(DEFAULT_CAMERA_SETTINGS.isMirrored);
+    setCameraZoom(DEFAULT_CAMERA_SETTINGS.cameraZoom);
   }
 
   useEffect(() => {
@@ -108,11 +159,11 @@ function CameraStage({ chord }: CameraStageProps) {
           style={
             {
               "--camera-zoom": String(cameraZoom),
-            } as React.CSSProperties
-        }
-        autoPlay
-        playsInline
-         muted
+            } as CSSProperties
+          }
+          autoPlay
+          playsInline
+          muted
         />
 
         {!isCameraActive && (
@@ -154,31 +205,39 @@ function CameraStage({ chord }: CameraStageProps) {
           checked={isMirrored}
           onChange={(event) => setIsMirrored(event.target.checked)}
         />
-      Mirror webcam view
+        Mirror webcam view
       </label>
 
       <label className="camera-zoom-control">
         <span>Camera zoom: {cameraZoom.toFixed(1)}x</span>
 
         <input
-        type="range"
-        min="1"
-        max="5"
-        step="0.1"
-        value={cameraZoom}
-        onChange={(event) => setCameraZoom(Number(event.target.value))}
-      />
-  </label>
+          type="range"
+          min="1"
+          max="2.5"
+          step="0.1"
+          value={cameraZoom}
+          onChange={(event) => setCameraZoom(Number(event.target.value))}
+        />
+      </label>
 
-<AlignmentControls
-  alignment={alignment}
-  onAlignmentChange={setAlignment}
-  onReset={() => setAlignment(DEFAULT_ALIGNMENT)}
-/>
+      <AlignmentControls
+        alignment={alignment}
+        onAlignmentChange={setAlignment}
+        onReset={() => setAlignment(DEFAULT_CAMERA_SETTINGS.alignment)}
+      />
+
+      <button
+        type="button"
+        className="camera-setup-reset"
+        onClick={resetCameraSetup}
+      >
+        Reset camera setup
+      </button>
 
       <p className="camera-note">
-        Use the controls to match the virtual fretboard to the visible guitar
-        neck.
+        Camera position, zoom, mirror preference, and fretboard alignment save
+        automatically in this browser.
       </p>
     </section>
   );
